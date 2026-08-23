@@ -27,10 +27,13 @@ TIME_WINDOW_SECONDS = 5      # kac saniyelik pencerede bakilacak
 PORT_COUNT_THRESHOLD = 15    # bu pencerede kac FARKLI port denenirse alarm
 
 
+
+#_ (alt çizgi) ise "bu fonksiyon sadece bu dosyanın içinde kullanılsın, dışarıdan çağrılmasın"
 def _parse_timestamp(ts: str) -> datetime:
     """ISO 8601 timestamp string'ini datetime objesine cevirir."""
     # "Z" son ekini Python'un anlayacagi formata cevir
     return datetime.fromisoformat(ts.replace("Z", "+00:00"))
+
 
 
 def detect_port_scans(
@@ -58,12 +61,15 @@ def detect_port_scans(
             "severity": "high" | "medium"
         }
     """
+    
+    #* Filtrele ve sırala
     # Sadece baglanti denemesi olaylarini al, zamana gore sirala
     conn_events = sorted(
         (e for e in events if e.get("event_type") == "connection_attempt"),
         key=lambda e: _parse_timestamp(e["timestamp"]),
     )
 
+    #* IP'lere göre grupla
     # IP bazli olay listesi olustur
     events_by_ip: dict[str, list[dict]] = defaultdict(list)
     for e in conn_events:
@@ -87,6 +93,9 @@ def detect_port_scans(
                 start_idx += 1
 
             window_events = ip_events[start_idx : end_idx + 1]
+            
+            # {...} burada bir set (küme) oluşturuyor — kümede tekrar eden değerler otomatik silinir. 
+            # Yani aynı porta 3 kere bağlanmaya çalışsa bile, kümede 1 kere sayılır.
             distinct_ports = {ev["dst_port"] for ev in window_events}
 
             if len(distinct_ports) >= port_threshold:
@@ -110,6 +119,7 @@ def detect_port_scans(
 
 
 if __name__ == "__main__":
+    
     # Hizli manuel test icin: sahte veriyle calistir
     import json
     from pathlib import Path
