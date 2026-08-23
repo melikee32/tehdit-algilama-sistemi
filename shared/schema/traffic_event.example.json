@@ -1,0 +1,10 @@
+{
+  "_aciklama": "Bu bir TASLAKTIR. Kisi 1 ile konusup kesinlestirin. Her ag olayi (paket/baglanti denemesi) bu formatta gelecek varsayimiyla rules-engine yazildi.",
+  "src_ip": "192.168.1.50",
+  "dst_ip": "192.168.1.10",
+  "dst_port": 22,
+  "protocol": "TCP",
+  "timestamp": "2026-08-23T14:32:10.123Z",
+  "event_type": "connection_attempt",
+  "success": false
+}
