@@ -1,26 +1,26 @@
 import json
 from datetime import datetime, timedelta
 
-base = datetime(2026, 8, 23, 15, 0, 0)
+base = datetime(2026, 8, 23, 16, 0, 0)
 events = []
 
-# Normal kullanici - 1 basarili giris, brute-force degil
-events.append({
-    "src_ip": "192.168.1.30", "dst_ip": "192.168.1.10", "username": "mel",
-    "protocol": "SSH", "timestamp": base.isoformat() + "Z",
-    "event_type": "login_attempt", "success": True
-})
-
-# Saldirgan - "admin" kullanicisina 8 basarisiz deneme, 10 saniye icinde
-for i in range(8):
+# Normal kullanici - 3 SYN, flood degil
+for i in range(3):
     events.append({
-        "src_ip": "192.168.1.60", "dst_ip": "192.168.1.10", "username": "admin",
-        "protocol": "SSH",
-        "timestamp": (base + timedelta(seconds=1.2 * i)).isoformat() + "Z",
-        "event_type": "login_attempt", "success": False
+        "src_ip": "192.168.1.25", "dst_ip": "192.168.1.10", "dst_port": 443,
+        "protocol": "TCP", "timestamp": (base + timedelta(milliseconds=300*i)).isoformat() + "Z",
+        "event_type": "syn_packet", "flags": "SYN"
     })
 
-with open("sample_login_events.json", "w", encoding="utf-8") as f:
+# Saldirgan - 2 saniye icinde 60 SYN paketi, hep ayni porta (443)
+for i in range(60):
+    events.append({
+        "src_ip": "192.168.1.70", "dst_ip": "192.168.1.10", "dst_port": 443,
+        "protocol": "TCP", "timestamp": (base + timedelta(milliseconds=25*i)).isoformat() + "Z",
+        "event_type": "syn_packet", "flags": "SYN"
+    })
+
+with open("sample_syn_events.json", "w", encoding="utf-8") as f:
     json.dump(events, f, indent=2, ensure_ascii=False)
 
 print("done", len(events))
