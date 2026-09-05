@@ -1,16 +1,19 @@
-# Python'un otomatik urettigi derleme/cache dosyalari
+﻿# Python
 __pycache__/
 *.pyc
-
-# Sanal ortam klasorleri (biri venv olustururrsa)
+*.pyo
 venv/
-env/
-.venv/
+*.db
 
-# IDE ayarlari (kisisel, paylasilmamali)
+# Node
+node_modules/
+package-lock.json
+package.json
+
+# IDE
 .vscode/
 .idea/
 
-# Isletim sistemi dosyalari
+# OS
 .DS_Store
 Thumbs.db
