@@ -26,3 +26,6 @@ data/
 *.joblib
 .ipynb_checkpoints/
 .venv/
+
+node_modules/
+frontend/node_modules/
