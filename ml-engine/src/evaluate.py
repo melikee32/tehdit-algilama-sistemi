@@ -235,11 +235,17 @@ def main() -> None:
     best_t = plot_pr_curve(df, REPORT_DIR / "pr_curve.png")
     print(f"\nPR egrisi: {REPORT_DIR / 'pr_curve.png'}")
     print(f"F1'i maksimize eden esik: {best_t:.4f}")
+
+    print("\n[KURUMSAL GUNCELLEME] Model bundle güncelleniyor (Dinamik Eşik Entegrasyonu)...")
+    bundle["params"]["best_threshold"] = best_t
+    joblib.dump(bundle, MODEL_PATH)
+    print(f"  -> En iyi eşik değeri ({best_t:.4f}) model dosyasına (joblib) kalıcı olarak kaydedildi!")
+    print("  -> Backend (FastAPI) artık hardcoded 0.5 yerine bu dinamik değeri okuyabilir.")
+
     if abs(best_t - DEFAULT_THRESHOLD) > 0.05:
         print(
-            f"  NOT: Bu deger correlation engine'in kullandigi "
-            f"{DEFAULT_THRESHOLD} esiginden farkli. Ya kalibrasyon "
-            f"kaydirilmali ya da esik ekipce tartisilmali."
+            f"  NOT: Bu deger eski hardcoded "
+            f"{DEFAULT_THRESHOLD} esiginden farkli."
         )
 
     print(f"\nRaporlar: {REPORT_DIR}/")

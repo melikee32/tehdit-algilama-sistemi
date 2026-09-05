@@ -91,3 +91,10 @@ class ScoreCalibrator:
         for x, f in zip(self.xp, self.fp):
             lines.append(f"  {x:+.4f} -> {f:.2f}")
         return "\n".join(lines)
+
+class RFCWrapper:
+    def __init__(self, rf): self.rf = rf
+    def decision_function(self, X): return self.rf.predict_proba(X)[:, 1]
+
+class DummyCalibrator:
+    def transform(self, scores): return scores
