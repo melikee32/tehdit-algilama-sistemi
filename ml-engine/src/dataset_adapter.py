@@ -50,6 +50,11 @@ FEATURE_ORDER = [
     "ack_count",
 ]
 
+# Elliptic Envelope kovaryans matrisinin tersini alir; packet_count
+# tam olarak fwd+bwd toplami oldugu icin matris tekillesiyor.
+# Modele beslenirken bu kolon cikarilir (bilgi kaybi yok, toplami
+# olusturan iki kolon zaten var).
+MODEL_FEATURES = [f for f in FEATURE_ORDER if f != "packet_count"]
 
 def load_csv(path: str | Path) -> pd.DataFrame:
     """Tek bir CICIDS2017 CSV dosyasini okur ve kolon adlarini temizler."""
@@ -108,9 +113,9 @@ def clean(df: pd.DataFrame) -> pd.DataFrame:
     return df.reset_index(drop=True)
 
 
-def to_matrix(df: pd.DataFrame) -> np.ndarray:
-    """Modele beslenecek sayisal matris. Kolon sirasi FEATURE_ORDER."""
-    return df[FEATURE_ORDER].to_numpy(dtype=float)
+def to_matrix(df: pd.DataFrame, features: list[str] | None = None) -> np.ndarray:
+    """Modele beslenecek sayisal matris."""
+    return df[features or FEATURE_ORDER].to_numpy(dtype=float)
 
 
 if __name__ == "__main__":
