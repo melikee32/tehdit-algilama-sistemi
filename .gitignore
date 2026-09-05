@@ -17,3 +17,12 @@ package.json
 # OS
 .DS_Store
 Thumbs.db
+
+# ML engine
+data/
+*.csv
+*.zip
+*.pkl
+*.joblib
+.ipynb_checkpoints/
+.venv/
