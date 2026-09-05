@@ -1,0 +1,23 @@
+﻿:root { font-family: 'Segoe UI', system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif; }
+body { margin: 0; padding: 0; background: #faf9f8; overflow-x: hidden; color: #323130; }
+#root { max-width: 100%; width: 100%; margin: 0; padding: 0; text-align: left; display: block; }
+* { box-sizing: border-box; }
+button, select, input, table, th, td { font-family: inherit; }
+
+/* 1. HATA COZUMU: Ince ve Zarif Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #c8c6c4; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #a19f9d; }
+
+/* 4. HATA COZUMU: Tablo Satirlari Icin Hover Efekti */
+.hover-row:hover { background-color: #f3f2f1 !important; transition: background-color 0.2s; cursor: pointer; }
+
+.print-only { display: none; }
+@media print {
+  @page { size: portrait; margin: 15mm; }
+  body { background: #ffffff !important; }
+  .no-print { display: none !important; }
+  .print-only { display: block !important; }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+}
