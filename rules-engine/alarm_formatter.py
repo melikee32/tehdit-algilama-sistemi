@@ -40,7 +40,7 @@ def format_alarms(raw_alarms: Iterable[dict]) -> list[dict]:
 
     # Her ham alarmdan hangi alanlarin "ortak" hangilerinin
     # "modul-ozel" (details) oldugunu ayirt ediyoruz
-    common_fields = {"alarm_type", "src_ip", "dst_ip", "severity", "window_start", "window_end"}
+    common_fields = {"alarm_type", "src_ip", "dst_ip", "severity", "window_start", "window_end", "confidence"}
 
     for raw in raw_alarms:
         # dst_ip her fonksiyonda yok (port_scan'de yok), o yuzden .get() kullaniyoruz
@@ -54,6 +54,7 @@ def format_alarms(raw_alarms: Iterable[dict]) -> list[dict]:
             "severity": raw.get("severity"),
             "window_start": raw.get("window_start"),
             "window_end": raw.get("window_end"),
+            "confidence": raw.get("confidence"),
             # details: ortak alanlarin DISINDA kalan her seyi buraya koyuyoruz
             # -- ornegin distinct_ports, failed_attempts, syn_count gibi
             # modul-ozel bilgiler burada kayboluyor degil, sadece toplaniyor
