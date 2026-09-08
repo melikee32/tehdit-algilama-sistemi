@@ -99,6 +99,10 @@ def detect_port_scans(
             distinct_ports = {ev["dst_port"] for ev in window_events}
 
             if len(distinct_ports) >= port_threshold:
+                # Esigi ne kadar astigimizi 0-1 arasi bir sayiya ceviriyoruz.
+                # Tam esikte ise 0.5, esigin 2 kati ve uzerindeyse 1.0'a yaklasir.
+                confidence = min(1.0, 0.5 + (len(distinct_ports) - port_threshold) / (port_threshold * 2))
+
                 alarms.append(
                     {
                         "alarm_type": "port_scan",
@@ -107,6 +111,8 @@ def detect_port_scans(
                         "window_start": window_events[0]["timestamp"],
                         "window_end": window_events[-1]["timestamp"],
                         "severity": "high" if len(distinct_ports) >= port_threshold * 2 else "medium",
+                        "confidence": round(confidence, 4),
+                        "source_engine": "rule",
                     }
                 )
                 # Ayni pencere icin tekrar tekrar alarm uretmemek icin

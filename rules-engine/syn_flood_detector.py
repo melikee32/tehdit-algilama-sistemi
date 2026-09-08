@@ -95,6 +95,8 @@ def detect_syn_flood(
             syn_count = len(window_events)
 
             if syn_count >= syn_threshold:
+                confidence = min(1.0, 0.5 + (syn_count - syn_threshold) / (syn_threshold * 2))
+
                 alarms.append(
                     {
                         "alarm_type": "syn_flood",
@@ -104,6 +106,8 @@ def detect_syn_flood(
                         "window_start": window_events[0]["timestamp"],
                         "window_end": window_events[-1]["timestamp"],
                         "severity": "high" if syn_count >= syn_threshold * 2 else "medium",
+                        "confidence": round(confidence, 4),
+                        "source_engine": "rule",
                     }
                 )
                 start_idx = end_idx + 1
