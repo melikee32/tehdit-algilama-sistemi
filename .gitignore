@@ -1,0 +1,31 @@
+﻿# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+*.db
+
+# Node
+node_modules/
+package-lock.json
+package.json
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# ML engine
+data/
+*.csv
+*.zip
+*.pkl
+*.joblib
+.ipynb_checkpoints/
+.venv/
+
+node_modules/
+frontend/node_modules/
