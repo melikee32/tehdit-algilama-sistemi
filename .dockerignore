@@ -1,0 +1,9 @@
+# Collector image build context repo kokudur (bkz. collector/testenv/docker-compose.yml)
+.git/
+rules-engine/
+collector/testenv/
+collector/output/*
+!collector/output/.gitkeep
+**/__pycache__/
+**/.pytest_cache/
+*.pyc

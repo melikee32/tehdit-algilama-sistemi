@@ -1,12 +1,15 @@
-﻿# Python
+# Python
 __pycache__/
 *.pyc
 *.pyo
+.pytest_cache/
 venv/
+.venv/
 *.db
 
 # Node
 node_modules/
+frontend/node_modules/
 package-lock.json
 package.json
 
@@ -25,7 +28,7 @@ data/
 *.pkl
 *.joblib
 .ipynb_checkpoints/
-.venv/
 
-node_modules/
-frontend/node_modules/
+# Collector
+collector/output/*
+!collector/output/.gitkeep

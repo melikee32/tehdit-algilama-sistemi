@@ -1,0 +1,9 @@
+{
+  "src_ip": "192.168.1.60",
+  "dst_ip": "192.168.1.10",
+  "username": "admin",
+  "protocol": "SSH",
+  "timestamp": "2026-08-23T15:00:01.200Z",
+  "event_type": "login_attempt",
+  "success": false
+}
