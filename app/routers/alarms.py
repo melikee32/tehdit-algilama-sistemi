@@ -11,7 +11,6 @@ yapÄ±lacaktÄ±r (bkz. TODO notu aÅŸaÄŸÄ±da).
 """
 from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi import APIRouter, Depends, HTTPException
 from ..ws_manager import ws_manager
 from sqlalchemy.orm import Session
 
@@ -34,10 +33,8 @@ async def create_alarm(alarm: schemas.AlarmCreate, db: Session = Depends(get_db)
             "attack_type": db_alarm.attack_type,
             "severity": db_alarm.severity,
             "score": db_alarm.score,
-                        "src_ip": db_alarm.src_ip,
+            "src_ip": db_alarm.src_ip,
             "dst_ip": db_alarm.dst_ip,
-            "dst_port": db_alarm.dst_port,
-            "detection_source": db_alarm.detection_source,
             "acknowledged": db_alarm.acknowledged,
             "timestamp": str(db_alarm.timestamp),
         }
