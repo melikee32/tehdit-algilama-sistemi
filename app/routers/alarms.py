@@ -36,7 +36,7 @@ async def create_alarm(alarm: schemas.AlarmCreate, db: Session = Depends(get_db)
             "score": db_alarm.score,
                         "src_ip": db_alarm.src_ip,
             "dst_ip": db_alarm.dst_ip,
-            "dst_port": db_alarm.dst_port,
+            "dst_port": "-",
             "detection_source": db_alarm.detection_source,
             "acknowledged": db_alarm.acknowledged,
             "timestamp": str(db_alarm.timestamp),
@@ -78,6 +78,7 @@ async def acknowledge_alarm(
         raise HTTPException(status_code=404, detail="Alarm bulunamadÄ±")
         await ws_manager.broadcast({"type": "alarm_updated", "data": {"id": db_alarm.id, "acknowledged": db_alarm.acknowledged}})
     return db_alarm
+
 
 
 
