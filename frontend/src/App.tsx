@@ -114,7 +114,7 @@ export default function App() {
               <div style={{ height: "250px", position: "relative" }}><ThreatChart alarms={filteredAlarms} /></div>
             </div>
             <div style={{ background: "#ffffff", border: "1px solid #edebe9", padding: "16px", display: "flex", flexDirection: "column" }}>
-              <div style={{ fontSize: "14px", fontWeight: "600", marginBottom: "16px" }}>Son Olaylar (Incidents)</div>
+              <div style={{ fontSize: "14px", fontWeight: "600", marginBottom: "16px" }}>Son Olaylar</div>
               <div style={{ flex: 1, overflow: "hidden" }}><AlarmTable alarms={filteredAlarms} /></div>
             </div>
           </div>
@@ -190,3 +190,4 @@ export default function App() {
     </>
   );
 }
+
