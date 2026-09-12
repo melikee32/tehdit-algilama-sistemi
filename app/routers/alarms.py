@@ -1,4 +1,4 @@
-﻿from typing import Optional, List
+from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException
 from ..ws_manager import ws_manager
 from sqlalchemy.orm import Session
@@ -13,17 +13,17 @@ async def create_alarm(alarm: schemas.AlarmCreate, db: Session = Depends(get_db)
     # Eger diger motorlar detection_source gondermediyse otomatik hesapla (Geriye donuk uyumluluk)
     if not alarm.detection_source:
         if alarm.rule_event_id and alarm.ml_event_id:
-            alarm.detection_source = "Hybrid"
+            ds = "Hybrid"
         elif alarm.rule_event_id:
-            alarm.detection_source = "Rule"
+            ds = "Rule"
         elif alarm.ml_event_id:
-            alarm.detection_source = "ML"
+            ds = "ML"
         else:
-            alarm.detection_source = "-"
-            
+            ds = "-"
+        alarm = alarm.model_copy(update={"detection_source": ds})
+
     db_alarm = crud.create_alarm(db, alarm)
 
-    # Kolonlar artik fiziksel olarak var, guvenle gonderebiliriz!
     await ws_manager.broadcast({
         "type": "new_alarm",
         "data": {
@@ -33,8 +33,9 @@ async def create_alarm(alarm: schemas.AlarmCreate, db: Session = Depends(get_db)
             "score": db_alarm.score,
             "src_ip": db_alarm.src_ip,
             "dst_ip": db_alarm.dst_ip,
-            "dst_port": db_alarm.dst_port,
             "detection_source": db_alarm.detection_source,
+            "rule_event_id": db_alarm.rule_event_id,
+            "ml_event_id": db_alarm.ml_event_id,
             "acknowledged": db_alarm.acknowledged,
             "timestamp": str(db_alarm.timestamp),
         }

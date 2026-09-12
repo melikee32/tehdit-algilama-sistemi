@@ -22,7 +22,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from .ws_manager import ws_manager
 from .database import Base, engine
-from .routers import health, events, alarms
+from .routers import health, events, alarms, stats
 
 
 Base.metadata.create_all(bind=engine)
@@ -50,6 +50,7 @@ app.add_middleware(
 app.include_router(health.router)
 app.include_router(events.router)
 app.include_router(alarms.router)
+app.include_router(stats.router)
 
 
 @app.get("/")

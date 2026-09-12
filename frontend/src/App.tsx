@@ -1,10 +1,9 @@
-﻿import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AlarmTable from "./components/AlarmTable";
 import ThreatChart from "./components/ThreatChart";
 import LogStream from "./components/LogStream";
+import type { Alarm, LogEntry } from "./types";
 
-export interface Alarm { id: string; attack_type: string; severity: "low" | "medium" | "high" | "critical"; score: number; src_ip: string; timestamp: string; }
-export interface LogEntry { id: number; time: string; text: string; isAlarm: boolean; }
 
 const WS_URL = "ws://localhost:8000/ws";
 const API_URL = "http://localhost:8000";
@@ -134,7 +133,7 @@ export default function App() {
           </div>
           <div style={{ textAlign: "right", fontSize: "12px", color: "#444", lineHeight: "1.6" }}>
             <strong>Oluşturulma Tarihi:</strong> {new Date().toLocaleString("tr-TR")}<br/>
-            <strong>Yetkili Analist:</strong> Admin_User<br/>
+            <strong>Yetkili Analist:</strong> SOC Analisti<br/>
             <strong>Zaman Filtresi:</strong> {timeFilter === "ALL" ? "Tüm Zamanlar" : timeFilter === "24H" ? "Son 24 Saat" : timeFilter === "1H" ? "Son 1 Saat" : "Son 7 Gün"}
           </div>
         </div>

@@ -1,12 +1,12 @@
 ﻿"""
-Pydantic ÅemalarÄ± â€” Ekip API SÃ¶zleÅŸmesi.
+Pydantic Semalari - Ekip API Sozlesmesi.
 
-Bu dosya, fizibilite dokÃ¼manÄ±nda belirtilen "ortak veri ÅŸemasÄ± (JSON schema)
-ve API sÃ¶zleÅŸmesi (OpenAPI)" gereksinimini karÅŸÄ±lar. KiÅŸi 2 (kural motoru) ve
-KiÅŸi 3 (ML motoru), tespitlerini bu ÅŸemalara uygun JSON olarak
-POST /events endpoint'ine gÃ¶ndermelidir. KiÅŸi 4 (bu backend), bu ÅŸemayÄ±
-tÃ¼m ekip iÃ§in otomatik olarak /docs adresinde OpenAPI dokÃ¼mantasyonu
-ÅŸeklinde sunar.
+Bu dosya, fizibilite dokumaninda belirtilen "ortak veri semasi (JSON schema)
+ve API sozlesmesi (OpenAPI)" gereksinimini karsilar. Kisi 2 (kural motoru) ve
+Kisi 3 (ML motoru), tespitlerini bu semalara uygun JSON olarak
+POST /events endpoint'ine gondermeli. Kisi 4 (bu backend), bu semay
+tum ekip icin otomatik olarak /docs adresinde OpenAPI dokumantas
+seklinde sunar.
 """
 from datetime import datetime
 from typing import Optional, Any
@@ -15,21 +15,20 @@ from pydantic import BaseModel, ConfigDict, Field
 from .models import EngineSource, Severity
 
 
-# ---------- Event ÅŸemalarÄ± (Kural/ML motorlarÄ±ndan gelen ham veri) ----------
+# ---------- Event semalari (Kural/ML motorlarindan gelen ham veri) ----------
 
 class EventCreate(BaseModel):
-    """Kural veya ML motorunun POST /events'e gÃ¶nderdiÄŸi veri formatÄ±."""
+    """Kural veya ML motorunun POST /events'e gonderdigi veri formati."""
 
     source_engine: EngineSource
     src_ip: Optional[str] = None
     dst_ip: Optional[str] = None
-    dst_port: Optional[str] = None
     detection_source: Optional[str] = None
     src_port: Optional[str] = None
     dst_port: Optional[str] = None
     protocol: Optional[str] = None
     attack_type: str = Field(..., examples=["port_scan", "brute_force", "syn_flood", "anomaly"])
-    confidence: float = Field(..., ge=0.0, le=1.0, description="Motorun kendi gÃ¼ven skoru (0-1)")
+    confidence: float = Field(..., ge=0.0, le=1.0, description="Motorun kendi guven skoru (0-1)")
     description: Optional[str] = None
     raw_payload: Optional[dict[str, Any]] = None
 
@@ -42,14 +41,13 @@ class EventOut(EventCreate):
     correlated: str
 
 
-# ---------- Alarm ÅŸemalarÄ± (Correlation engine Ã§Ä±ktÄ±sÄ±, panel bunu okur) ----------
+# ---------- Alarm semalari (Correlation engine ciktisi, panel bunu okur) ----------
 
 class AlarmCreate(BaseModel):
-    """Correlation engine'in (Issue #22) nihai alarm Ã¼retirken kullanacaÄŸÄ± format."""
+    """Correlation engine'in nihai alarm uretirken kullanacagi format."""
 
     src_ip: Optional[str] = None
     dst_ip: Optional[str] = None
-    dst_port: Optional[str] = None
     detection_source: Optional[str] = None
     attack_type: str
     severity: Severity = Severity.MEDIUM
@@ -77,4 +75,3 @@ class HealthOut(BaseModel):
     status: str
     service: str
     version: str
-
