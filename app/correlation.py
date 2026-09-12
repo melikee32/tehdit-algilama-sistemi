@@ -33,7 +33,7 @@ from datetime import datetime, timezone
 API         = "http://localhost:8000"
 RULE_WEIGHT = 0.6
 ML_WEIGHT   = 0.4
-THRESHOLD   = 0.5
+THRESHOLD   = 0.3  # Düşük (Low) alarmların üretebilmesi için 0.5'ten 0.3'e çekildi
 
 
 def severity_from_score(score: float) -> str:
