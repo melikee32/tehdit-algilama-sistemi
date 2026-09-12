@@ -169,6 +169,8 @@ def run():
                     ts = ev.get("timestamp", "")
                     if ts:
                         ev_time = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+                        if ev_time.tzinfo is None:
+                            ev_time = ev_time.replace(tzinfo=timezone.utc)
                         all_ev_times.append(ev_time)
                 except (ValueError, TypeError):
                     pass
