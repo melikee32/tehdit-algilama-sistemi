@@ -1,15 +1,15 @@
-"""
+﻿"""
 ORM Modelleri.
 
-İki ana tablo var:
-- Event: Kural motoru (Kişi 2) veya ML motorundan (Kişi 3) gelen HAM tespit
-  kayıtları. Correlation engine (Issue #22, Kişi 4) bunları okuyup birleştirir.
-- Alarm: Correlation engine tarafından üretilen NİHAİ, panelde gösterilecek
-  kayıtlar (ağırlıklı skorlama sonucu).
+Ä°ki ana tablo var:
+- Event: Kural motoru (KiÅŸi 2) veya ML motorundan (KiÅŸi 3) gelen HAM tespit
+  kayÄ±tlarÄ±. Correlation engine (Issue #22, KiÅŸi 4) bunlarÄ± okuyup birleÅŸtirir.
+- Alarm: Correlation engine tarafÄ±ndan Ã¼retilen NÄ°HAÄ°, panelde gÃ¶sterilecek
+  kayÄ±tlar (aÄŸÄ±rlÄ±klÄ± skorlama sonucu).
 
-Bu ayrım, doküman Bölüm 2'deki "Korelasyon Motoru & Panel: İki motorun
-alarmlarını ağırlıklı skorlama ile birleştiren mantık" gereksinimini
-yansıtır.
+Bu ayrÄ±m, dokÃ¼man BÃ¶lÃ¼m 2'deki "Korelasyon Motoru & Panel: Ä°ki motorun
+alarmlarÄ±nÄ± aÄŸÄ±rlÄ±klÄ± skorlama ile birleÅŸtiren mantÄ±k" gereksinimini
+yansÄ±tÄ±r.
 """
 import enum
 import uuid
@@ -40,7 +40,7 @@ class Severity(str, enum.Enum):
 
 
 class Event(Base):
-    """Kural veya ML motorundan gelen ham tespit kaydı (correlation öncesi)."""
+    """Kural veya ML motorundan gelen ham tespit kaydÄ± (correlation Ã¶ncesi)."""
 
     __tablename__ = "events"
 
@@ -50,20 +50,22 @@ class Event(Base):
 
     src_ip = Column(String, nullable=True)
     dst_ip = Column(String, nullable=True)
+    dst_port = Column(String, nullable=True)
+    detection_source = Column(String, nullable=True)
     src_port = Column(String, nullable=True)
     dst_port = Column(String, nullable=True)
     protocol = Column(String, nullable=True)
 
-    attack_type = Column(String, nullable=False)  # örn: "port_scan", "brute_force", "syn_flood", "anomaly"
-    confidence = Column(Float, nullable=False, default=0.0)  # 0.0 - 1.0 arası
+    attack_type = Column(String, nullable=False)  # Ã¶rn: "port_scan", "brute_force", "syn_flood", "anomaly"
+    confidence = Column(Float, nullable=False, default=0.0)  # 0.0 - 1.0 arasÄ±
     description = Column(Text, nullable=True)
 
-    raw_payload = Column(JSON, nullable=True)  # motora özgü ek veri (esneklik için)
-    correlated = Column(String, default="false")  # correlation engine işledi mi (Issue #22'de kullanılacak)
+    raw_payload = Column(JSON, nullable=True)  # motora Ã¶zgÃ¼ ek veri (esneklik iÃ§in)
+    correlated = Column(String, default="false")  # correlation engine iÅŸledi mi (Issue #22'de kullanÄ±lacak)
 
 
 class Alarm(Base):
-    """Correlation engine tarafından üretilen, panelde gösterilecek nihai alarm."""
+    """Correlation engine tarafÄ±ndan Ã¼retilen, panelde gÃ¶sterilecek nihai alarm."""
 
     __tablename__ = "alarms"
 
@@ -72,13 +74,16 @@ class Alarm(Base):
 
     src_ip = Column(String, nullable=True)
     dst_ip = Column(String, nullable=True)
+    dst_port = Column(String, nullable=True)
+    detection_source = Column(String, nullable=True)
     attack_type = Column(String, nullable=False)
 
     severity = Column(Enum(Severity), nullable=False, default=Severity.MEDIUM)
-    score = Column(Float, nullable=False)  # korelasyon motorunun ağırlıklı nihai skoru (0.0 - 1.0)
+    score = Column(Float, nullable=False)  # korelasyon motorunun aÄŸÄ±rlÄ±klÄ± nihai skoru (0.0 - 1.0)
 
     rule_event_id = Column(String, nullable=True)  # kaynak Event.id (rule engine)
     ml_event_id = Column(String, nullable=True)    # kaynak Event.id (ml engine)
 
     description = Column(Text, nullable=True)
-    acknowledged = Column(String, default="false")  # analist tarafından görüldü mü
+    acknowledged = Column(String, default="false")  # analist tarafÄ±ndan gÃ¶rÃ¼ldÃ¼ mÃ¼
+

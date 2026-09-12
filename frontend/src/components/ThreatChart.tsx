@@ -24,10 +24,11 @@ export default function ThreatChart({ alarms }: { alarms: Alarm[] }) {
         </PieChart>
       </ResponsiveContainer>
       
-      <div style={{ position: "absolute", top: "48%", left: "50%", transform: "translate(-50%, -50%)", textAlign: "center", pointerEvents: "none" }}>
+      <div style={{ position: "absolute", top: "43%", left: "50%", paddingLeft: "4px", transform: "translate(-50%, -50%)", textAlign: "center", pointerEvents: "none" }}>
         <div style={{ fontSize: "28px", fontWeight: "600", lineHeight: "1" }}>{alarms.length}</div>
         <div style={{ fontSize: "10px", fontWeight: "600", marginTop: "2px", letterSpacing: "1px" }}>TOPLAM</div>
       </div>
     </div>
   );
 }
+
