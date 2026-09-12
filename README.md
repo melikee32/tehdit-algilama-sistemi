@@ -72,5 +72,3 @@ python ml-engine/src/train_model.py
 ```bash
 pytest collector/tests rules-engine/tests shared/schema/tests
 ```
-
-(`app/` ve `ml-engine/` için henüz test yok — bilinen bir eksik.)
