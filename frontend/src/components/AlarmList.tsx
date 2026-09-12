@@ -1,11 +1,4 @@
-﻿interface Alarm {
-  id: string;
-  attack_type: string;
-  severity: "low" | "medium" | "high" | "critical";
-  score: number;
-  src_ip: string;
-  timestamp: string;
-}
+import type { Alarm } from "../types";
 
 const severityColor: Record<string, string> = {
   low: "#4ade80",

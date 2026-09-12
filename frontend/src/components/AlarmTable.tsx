@@ -1,17 +1,9 @@
-﻿interface Alarm { 
-  id: string; 
-  attack_type: string; 
-  severity: "low" | "medium" | "high" | "critical"; 
-  score: number; 
-  src_ip: string; 
-  dst_ip?: string; 
-  rule_event_id?: string; 
-  ml_event_id?: string; 
-  timestamp: string; 
-}
+import type { Alarm } from "../types";
+
 const SEV_TR: Record<string, string> = { low: "Düşük", medium: "Orta", high: "Yüksek", critical: "Kritik" };
 const SEV_COLOR: Record<string, string> = { low: "#107c10", medium: "#ffb900", high: "#f7630c", critical: "#a4262c" };
 const IT_ACRONYMS: Record<string, string> = { sql: "SQL", ddos: "DDoS", xss: "XSS", ip: "IP", ssh: "SSH", ftp: "FTP" };
+
 
 const formatName = (s: string) => s.split('_').map(w => {
   const lower = w.toLowerCase();
@@ -45,7 +37,15 @@ export default function AlarmTable({ alarms }: { alarms: Alarm[] }) {
               <td style={{ padding: "10px 12px", color: "#0078d4" }}>{a.src_ip || "-"}</td>
               <td style={{ padding: "10px 12px", color: "#0078d4" }}>{a.dst_ip || "-"}</td>
               <td style={{ padding: "10px 12px", fontWeight: "500", color: "#605e5c" }}>
-                {(a.rule_event_id && a.ml_event_id) ? "Hibrit (AI + Kural)" : a.ml_event_id ? "Makine Öğrenmesi" : a.rule_event_id ? "Kural Motoru" : "-"}
+                {a.detection_source
+                  ? a.detection_source === "Hybrid" ? "Hibrit (AI + Kural)"
+                    : a.detection_source === "ML" ? "Makine Öğrenmesi"
+                    : a.detection_source === "Rule" ? "Kural Motoru"
+                    : a.detection_source
+                  : (a.rule_event_id && a.ml_event_id) ? "Hibrit (AI + Kural)"
+                    : a.ml_event_id ? "Makine Öğrenmesi"
+                    : a.rule_event_id ? "Kural Motoru"
+                    : "-"}
               </td>
               <td style={{ padding: "10px 12px", textAlign: "left" }}>%{(a.score * 100).toFixed(0)}</td>
               <td style={{ padding: "10px 12px", fontSize: "12px", textAlign: "left" }}>{new Date(a.timestamp).toLocaleString("tr-TR")}</td>

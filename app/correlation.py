@@ -1,4 +1,4 @@
-﻿"""
+"""
 Correlation Engine - Issue #22 (v4)
 
 Degisiklikler:
@@ -28,6 +28,7 @@ Alarm esigi           : combined >= 0.5 (tek motor tek basina yeterli)
 """
 import httpx
 from collections import defaultdict
+from datetime import datetime, timezone
 
 API         = "http://localhost:8000"
 RULE_WEIGHT = 0.6
@@ -131,6 +132,7 @@ def process_group(src_ip: str, rule_events: list, ml_events: list) -> list[dict]
 
 
 def run():
+    run_start = datetime.now(timezone.utc)
     resp = httpx.get(f"{API}/events", params={"correlated": "false", "limit": 200})
     resp.raise_for_status()
     events = resp.json()
@@ -146,20 +148,50 @@ def run():
         groups[key][ev["source_engine"]].append(ev)
 
     total_alarms = 0
+    latencies: list[float] = []  # saniye cinsinden tespit gecikmeleri
+
     for src_ip, engines in groups.items():
         alarm_items = process_group(src_ip, engines["rule"], engines["ml"])
 
         for item in alarm_items:
             ar = httpx.post(f"{API}/alarms", json=item["payload"])
+            if ar.status_code not in (200, 201):
+                print(f"  !! Alarm POST hatasi: {ar.status_code} - {ar.text[:300]}")
+                continue
             alarm_id = ar.json().get("id", "?")
             severity = item["payload"]["severity"]
-            print(f"  >> Alarm olusturuldu: {alarm_id} ({severity})")
+
+            # --- Tespit Gecikmesi Hesabi ---
+            # En eski event'in timestamp'inden alarm uretim anina kadar gecen sure
+            all_ev_times = []
+            for ev in item["events_to_mark"]:
+                try:
+                    ts = ev.get("timestamp", "")
+                    if ts:
+                        ev_time = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+                        all_ev_times.append(ev_time)
+                except (ValueError, TypeError):
+                    pass
+
+            if all_ev_times:
+                oldest_event = min(all_ev_times)
+                latency_sec = (run_start - oldest_event).total_seconds()
+                latencies.append(latency_sec)
+                print(f"  >> Alarm olusturuldu: {alarm_id} ({severity}) | gecikme: {latency_sec:.1f}s")
+            else:
+                print(f"  >> Alarm olusturuldu: {alarm_id} ({severity})")
+
             total_alarms += 1
 
             for ev in item["events_to_mark"]:
                 httpx.patch(f"{API}/events/{ev['id']}/correlate")
 
-    print(f"[Correlation] Tamamlandi. Toplam {total_alarms} alarm uretildi.")
+    # --- Ozet ---
+    print(f"\n[Correlation] Tamamlandi. Toplam {total_alarms} alarm uretildi.")
+    if latencies:
+        avg_lat = sum(latencies) / len(latencies)
+        max_lat = max(latencies)
+        print(f"[Correlation] Tespit Gecikmesi -> Ort: {avg_lat:.1f}s  Maks: {max_lat:.1f}s")
 
 
 if __name__ == "__main__":
