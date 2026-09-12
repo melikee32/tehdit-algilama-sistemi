@@ -1,0 +1,5 @@
+-r app/requirements.txt
+-r ml-engine/requirements.txt
+-r collector/requirements.txt
+-r rules-engine/requirements.txt
+-r shared/requirements.txt
