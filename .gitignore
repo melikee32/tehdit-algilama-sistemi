@@ -1,4 +1,4 @@
-# Python
+﻿# Python
 __pycache__/
 *.pyc
 *.pyo
@@ -32,3 +32,7 @@ data/
 # Collector
 collector/output/*
 !collector/output/.gitkeep
+# Frontend bağımlılıklarının github'a gitmesi için (Dev dalı düzeltmesi)
+!frontend/package.json
+!frontend/package-lock.json
+
