@@ -1,5 +1,5 @@
 ﻿"""
-Correlation Engine - Issue #22 (v3)
+Correlation Engine - Issue #22 (v4)
 
 Degisiklikler:
   v2: Gruplama src_ip bazina alindi (ML anomaly eslesmesi icin)
@@ -12,11 +12,19 @@ Degisiklikler:
         - Severity tam olarak calisir (critical, high vs. ulasilabilir)
       NOT: Kisi 3 IsolationForest skorunu 0-1 araligina normalize
       ederken bu eigi dikkate alabilir.
+  v4:
+    - Ayni olu bolge kural motoru icin de vardi ama v3'te unutulmustu:
+      ml_events bos oldugunda combined = rule_score * 0.6 hesaplaniyordu,
+      bu da kural motorunun kendi esiginde (confidence=0.5) yakaladigi
+      seyi THRESHOLD'un altinda birakip alarm uretmesini engelliyordu
+      (rule_score >= 0.5 iken alarm icin >= 0.833, yani tespit esiginin
+      ~1.67 kati gerekiyordu). ML eslesmesi yoksa artik ceza yok:
+      combined = rule_score.
 
 Agirliklar (iki motor birlikte):
     Kural motoru (rule) : 0.6
     ML motoru    (ml)   : 0.4
-Alarm esigi           : combined >= 0.5
+Alarm esigi           : combined >= 0.5 (tek motor tek basina yeterli)
 """
 import httpx
 from collections import defaultdict
@@ -58,7 +66,14 @@ def process_group(src_ip: str, rule_events: list, ml_events: list) -> list[dict]
         for attack_type, typed_rules in rule_by_type.items():
             rule_score = max(e["confidence"] for e in typed_rules)
             ml_score   = max((e["confidence"] for e in ml_events), default=0.0)
-            combined   = rule_score * RULE_WEIGHT + ml_score * ML_WEIGHT
+            if ml_events:
+                combined = rule_score * RULE_WEIGHT + ml_score * ML_WEIGHT
+            else:
+                # ML eslesmesi yoksa: "sadece ML" dalindaki gibi ceza yok.
+                # Aksi halde kural motoru kendi esiginde (confidence=0.5)
+                # yakaladigi bir seyi *0.6 sonrasi THRESHOLD'un altinda
+                # kalip hic alarm uretemiyordu (olu bolge, count < 1.67x esik).
+                combined = rule_score
 
             print(
                 f"[Correlation] {src_ip} / {attack_type} "
@@ -76,8 +91,9 @@ def process_group(src_ip: str, rule_events: list, ml_events: list) -> list[dict]
                         "rule_event_id": typed_rules[0]["id"],
                         "ml_event_id":   ml_events[0]["id"] if ml_events else None,
                         "description": (
-                            f"Correlation v3: rule({attack_type})*{RULE_WEIGHT}"
-                            + (f" + ml(anomaly)*{ML_WEIGHT}" if ml_events else "")
+                            f"Correlation v4: rule({attack_type})*{RULE_WEIGHT} + ml(anomaly)*{ML_WEIGHT}"
+                            if ml_events else
+                            f"Correlation v4: rule tek motor: {attack_type} confidence={rule_score:.2f}"
                         ),
                     },
                     "events_to_mark": typed_rules + (ml_events if ml_events else []),
