@@ -2,11 +2,16 @@
 __pycache__/
 *.pyc
 *.pyo
+.pytest_cache/
 venv/
+.venv/
 *.db
 
 # Node
 node_modules/
+frontend/node_modules/
+package-lock.json
+package.json
 
 # IDE
 .vscode/
@@ -23,7 +28,11 @@ data/
 *.pkl
 *.joblib
 .ipynb_checkpoints/
-.venv/
 
-node_modules/
-frontend/node_modules/
+# Collector
+collector/output/*
+!collector/output/.gitkeep
+# Frontend bağımlılıklarının github'a gitmesi için (Dev dalı düzeltmesi)
+!frontend/package.json
+!frontend/package-lock.json
+

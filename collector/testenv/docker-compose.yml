@@ -1,0 +1,50 @@
+services:
+  target:
+    build: ./target
+    container_name: lab-target
+    hostname: target
+    networks:
+      - labnet
+    volumes:
+      - target_logs:/var/log
+
+  # collector, target'in network namespace'ini paylasir (network_mode: service:target)
+  # boylece target'a giden/target'tan cikan TUM trafigi kendi arayuzuymus gibi dinleyebilir.
+  collector:
+    build:
+      context: ../..
+      dockerfile: collector/Dockerfile
+    container_name: lab-collector
+    network_mode: "service:target"
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    depends_on:
+      - target
+    volumes:
+      - target_logs:/var/log/target:ro
+      # Repo kokunu /app'e mount ediyoruz (imaj yapisiyla ayni: /app/collector +
+      # /app/shared) ki writer/event_writer.py shared/schema'yi (Issue #28)
+      # gelistirme sirasinda yeniden build etmeden gorebilsin.
+      - ../..:/app
+
+  attacker:
+    build: ./attacker
+    container_name: lab-attacker
+    hostname: attacker
+    networks:
+      - labnet
+    depends_on:
+      - target
+    tty: true
+    volumes:
+      # Saldiri simulasyon scriptleri (Issue #8), attacker Dockerfile'inin
+      # WORKDIR'i olan /simulate altina mount edilir.
+      - ../simulate:/simulate
+
+networks:
+  labnet:
+    driver: bridge
+
+volumes:
+  target_logs:
